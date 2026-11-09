@@ -48,6 +48,25 @@ const CSS_CHROME = `  /* Picker chrome. */
   /* First-level settings section wrapper (mirrors the skin-center's
      sectionList): the ul/li carry no default list styling. */
   .we-picker__section-list { margin: 0; padding: 0; list-style: none; }
+  /* Card header: name + count badge + description (mirrors skin-center).
+     ⚠️ 这是**主包结构**的基础排版，不是玻璃增强 —— 曾经只住在玻璃子包的 CSS 里，
+     关闭「液态玻璃」子包后整段消失，设置页标题退回行内排版（issue #333）。
+     玻璃包可以在此之上覆盖颜色/材质，但布局必须留在这里。 */
+  .we-picker__card-shell { display: block; }
+  .we-picker__card-head {
+    display: flex; align-items: baseline; gap: 8px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--dsw-alias-border-l2, rgba(128, 128, 128, 0.22));
+  }
+  .we-picker__card-name {
+    font-size: 15px; font-weight: 600; color: var(--dsw-alias-label-primary, inherit);
+  }
+  .we-picker__card-badge {
+    font-size: 11px; font-weight: 500; color: var(--dsw-alias-label-secondary, #6b7280);
+  }
+  .we-picker__card-desc {
+    margin-left: auto; font-size: 12px; color: var(--dsw-alias-label-tertiary, #6b7280);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
 
   /* 统一运行器发放绘制资格，不通过共享令牌或任意后代清底。 */
   body[data-we-glass-page] :where([data-we-surface-runtime="settings-window"],[data-we-surface-runtime="declared"],[data-we-layout-runtime]) {

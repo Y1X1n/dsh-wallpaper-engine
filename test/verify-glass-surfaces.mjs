@@ -2650,6 +2650,29 @@ console.log('\n⑲ 标记值跟走 resolver（t9-001 运行级断言：真跑 we
       && !strippedRules.every((h) => h.includes(':not([data-we-host-dialog])')));
 }
 
+// ── ㉑ 设置页标题栏的基础排版必须住主包样式域（issue #333）────────────────────
+// 关闭「液态玻璃」子包后，玻璃包注入的那整份 CSS 不加载。`.we-picker__card-head` 的
+// flex 布局与 `.we-picker__card-desc` 的右对齐若只住在玻璃包里，标题 / 计数 / 说明
+// 会退回行内挤压（用户实测截图）。这一条只钉「主包样式域里有基础排版」，玻璃包仍可
+// 在其上覆盖颜色 / 材质；负对照把主包规则摘掉，同一判据必须判红。
+{
+  const coreCss = styleText();
+  const ruleOf = (css, sel) => {
+    const header = sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const m = new RegExp(header + '\\s*\\{([^}]*)\\}').exec(css);
+    return m ? m[1] : '';
+  };
+  const hasHeaderLayout = (css) => /display\s*:\s*flex/.test(ruleOf(css, '.we-picker__card-head'))
+    && /margin-left\s*:\s*auto/.test(ruleOf(css, '.we-picker__card-desc'));
+  check('㉑a 主包样式域带标题栏 flex 布局与说明右对齐（关闭玻璃子包后 #333 不再复发）',
+    hasHeaderLayout(coreCss),
+    'card-desc 规则缺失时标题会退回行内排版');
+  const stripped = coreCss
+    .replace(/\.we-picker__card-head\s*\{[^}]*\}/, '')
+    .replace(/\.we-picker__card-desc\s*\{[^}]*\}/, '');
+  check('negative control: 摘掉主包标题栏规则后同一条判据判红', !hasHeaderLayout(stripped));
+}
+
 console.log('');
 if (failed) {
   console.log('GLASS SURFACE CHECKS FAILED — ' + failed + ' failed');
